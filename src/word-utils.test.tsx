@@ -18,9 +18,7 @@ describe("computeGuess", () => {
       LetterState.Miss,
     ]);
   });
-});
 
-describe("computeGuess", () => {
   it("works with all matches", () => {
     expect(computeGuess("boost", "boost")).toEqual([
       LetterState.Match,
@@ -30,9 +28,7 @@ describe("computeGuess", () => {
       LetterState.Match,
     ]);
   });
-});
 
-describe("computeGuess", () => {
   it("all misses", () => {
     expect(computeGuess("boost", "alarm")).toEqual([
       LetterState.Miss,
@@ -42,16 +38,18 @@ describe("computeGuess", () => {
       LetterState.Miss,
     ]);
   });
-});
 
-describe("computeGuess", () => {
   it("only does one match when two letters are present", () => {
-    expect(computeGuess("solid", "boost")).toEqual([
-      LetterState.Present,
+    expect(computeGuess("belle", "belts")).toEqual([
+      LetterState.Match,
+      LetterState.Match,
       LetterState.Match,
       LetterState.Miss,
       LetterState.Miss,
-      LetterState.Miss,
     ]);
+  });
+
+  it("returns an empty array when there is an incomplete guess", () => {
+    expect(computeGuess("so", "boost")).toEqual([]);
   });
 });
