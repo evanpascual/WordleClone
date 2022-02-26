@@ -10,10 +10,13 @@ export default function App() {
         <h1 className="text-4xl text-center"> Wordle </h1>
       </header>
 
-      <main>
-        <WordRow letters="" />
-        <WordRow letters="" />
-        <WordRow letters="" />
+      <main className="grid grid-rows-6 gap-4">
+        <WordRow letters="hello" />
+        <WordRow letters="solar" />
+        <WordRow letters="penny" />
+        <WordRow letters="snack" />
+        <WordRow letters="stare" />
+        <WordRow letters="buddy" />
       </main>
     </div>
   );
