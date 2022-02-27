@@ -1,6 +1,6 @@
 import wordBank from './word-bank.json';
 
-const word = getRandomWord();   //Get a random word to serve as the answer.
+export const LETTER_LENGTH = 5; 
 
 //Generates random int to use as index for word bank.
 export function getRandomWord() {
@@ -15,9 +15,9 @@ export enum LetterState {
     Present,
     Match,
 }
-console.log(word);
+
 //Determines the accuracy of the guess to the answer by using LetterState.
-export function computeGuess(guess: string, answer:string = word): LetterState[] {
+export function computeGuess(guess: string, answer:string): LetterState[] {
      const result: LetterState[] = [];
 
     if(guess.length !== answer.length) { return result; }   //If the guess string is too short.
