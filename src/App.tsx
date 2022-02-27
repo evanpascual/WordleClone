@@ -30,8 +30,13 @@ export default function App() {
   const numGuessesRemaining = GUESS_LENGTH - rows.length;
   rows = rows.concat(Array(numGuessesRemaining).fill(""));
 
+  //Handle how the game is completed when winning/using all 6 guesses
+  const isGameOver =
+    state.guesses.length === GUESS_LENGTH ||
+    state.guesses[state.guesses.length - 1] === state.answer;
+
   return (
-    <div className="mx-auto w-96">
+    <div className="mx-auto w-96 relative">
       <header className="border-b border-gray-500 pb-2 my-2">
         <h1 className="text-4xl text-center"> Wordle </h1>
         <div>
@@ -40,6 +45,7 @@ export default function App() {
             type="text"
             value={guess}
             onChange={onChange}
+            disabled={isGameOver}
           />
         </div>
       </header>
@@ -48,8 +54,27 @@ export default function App() {
         {rows.map((row, index) => (
           <WordRow key={index} letters={row} />
         ))}
-        ;
       </main>
+
+      {isGameOver && (
+        <div
+          className="absolute bg-white left-0 right-0 first-line 
+          top-1/3 p-4 border border-gray-500 w-3/4 mx-auto rounded 
+          text-center"
+          role="modal"
+        >
+          GAME OVER
+          <button
+            className="block bg-green-500 p-1 mx-auto rounded-md mt-3 shadow"
+            onClick={() => {
+              state.newGame();
+              setGuess("");
+            }}
+          >
+            New Game
+          </button>
+        </div>
+      )}
     </div>
   );
 }

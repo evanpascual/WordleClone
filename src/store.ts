@@ -6,6 +6,7 @@ interface StoreState {
     answer: string;
     guesses: string[];
     addGuess: (guess: string) => void;
+    newGame: () => void;
 }
 
 //Using zustand as a state manager.
@@ -19,8 +20,13 @@ export const useStore = create<StoreState>(
                     guesses: [...state.guesses, guess],
                 }));
             },
-        }
-  ),
+            newGame: () => {
+                set({
+                    answer: getRandomWord(),
+                    guesses: []
+                })
+            }
+        }),
   {
     name: "wordle", // unique name
   }
