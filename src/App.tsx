@@ -21,19 +21,17 @@ export default function App() {
     setGuess(newGuess);
   };
 
-  let rows = [...state.guesses]; //Each row is a guess. Copy list from state.
+  let rows = [...state.rows]; //Each row is a guess. Copy list from state.
 
   //While there are still more guesses available, add guesses to rows array.
   if (rows.length < GUESS_LENGTH) {
-    rows.push(guess);
+    rows.push({ guess });
   }
   const numGuessesRemaining = GUESS_LENGTH - rows.length;
   rows = rows.concat(Array(numGuessesRemaining).fill(""));
 
   //Handle how the game is completed when winning/using all 6 guesses
-  const isGameOver =
-    state.guesses.length === GUESS_LENGTH ||
-    state.guesses[state.guesses.length - 1] === state.answer;
+  const isGameOver = state.rows.length === GUESS_LENGTH;
 
   return (
     <div className="mx-auto w-96 relative">
@@ -51,8 +49,8 @@ export default function App() {
       </header>
 
       <main className="grid grid-rows-6 gap-4">
-        {rows.map((row, index) => (
-          <WordRow key={index} letters={row} />
+        {rows.map(({ guess, result }, index) => (
+          <WordRow key={index} letters={guess} result={result} />
         ))}
       </main>
 
