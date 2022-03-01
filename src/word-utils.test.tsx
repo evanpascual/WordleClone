@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { computeGuess, getRandomWord, LetterState } from "./word-utils";
+import { useStore } from "./store";
+import {
+  computeGuess,
+  getRandomWord,
+  isValidWord,
+  LetterState,
+} from "./word-utils";
 
 describe("getRandomWord", () => {
   it("random word", () => {
@@ -71,5 +77,15 @@ describe("computeGuess", () => {
       LetterState.Match,
       LetterState.Miss,
     ]);
+  });
+});
+
+describe("input validation", () => {
+  it("is a valid word", () => {
+    expect(isValidWord("alarm")).toBeTruthy();
+  });
+
+  it("is an invalid word", () => {
+    expect(isValidWord("catss")).toBeFalsy();
   });
 });

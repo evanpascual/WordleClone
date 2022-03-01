@@ -74,3 +74,8 @@ export function computeGuess(guess: string, answer:string): LetterState[] {
     
     return result;
 }
+
+//Check that only valid words are used as guesses
+export function isValidWord(word: string): boolean {
+    return wordBank.includes(word);
+}
