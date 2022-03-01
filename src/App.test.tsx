@@ -1,59 +1,58 @@
 import { describe, expect, it } from "vitest";
 import App from "./App";
 import { useStore } from "./store";
-import { render, screen, userEvent } from "./test/test-utils.test";
+import { render, screen, userEvent, within } from "./test/test-utils.test";
 
 describe("Simple working test", () => {
   it("the title is visible", () => {
     render(<App />);
+
     expect(screen.getByText(/Wordle/i)).toBeInTheDocument();
   });
 
   it("shows empty state", () => {
-    useStore.setState({ guesses: [] });
+    useStore.getState().newGame([]);
     render(<App />);
+
     expect(screen.queryByText("GAME OVER")).toBeNull();
     expect(document.querySelectorAll("main div")).toHaveLength(6);
     expect(document.querySelector("main")?.textContent).toEqual("");
   });
 
-  it("shows one row of guesses", () => {
-    useStore.setState({ guesses: ["hello"] });
+  it("shows one guess", () => {
+    useStore.getState().newGame(["hello"]);
     render(<App />);
+
     expect(screen.queryByText("GAME OVER")).toBeNull();
     expect(document.querySelectorAll("main div")).toHaveLength(6);
     expect(document.querySelector("main")?.textContent).toEqual("hello");
   });
 
-  it("shows game over state when given correct answer", () => {
-    useStore.setState({
-      guesses: ["bands", "block", "brags", "brawl", "blank"],
-      answer: "blank",
-    });
+  it("shows lost game", () => {
+    useStore
+      .getState()
+      .newGame(["bands", "block", "brags", "brawl", "blank", "broke"]);
     render(<App />);
+
     expect(screen.queryByText("GAME OVER"));
   });
 
-  it("shows game over state when given 6 failed attemps", () => {
-    useStore.setState({
-      guesses: ["bands", "block", "brags", "brawl", "blank", "banks"],
-      answer: "broke",
-    });
+  it("shows won game", () => {
+    const initialState = ["bands", "block", "brags", "brawl", "blank"];
+    useStore.getState().newGame(initialState);
+    const answer = useStore.getState().answer;
+    useStore.getState().addGuess(answer);
     render(<App />);
-    expect(screen.queryByText("GAME OVER"));
+
+    expect(screen.queryByText("GAME OVER")).toBeInTheDocument();
   });
 
-  it("start a new game", () => {
-    useStore.setState({
-      guesses: ["bands", "block", "brags", "brawl", "blank", "banks"],
-      answer: "broke",
-    });
+  it("can start a new game", () => {
+    useStore
+      .getState()
+      .newGame(["bands", "block", "brags", "brawl", "blank", "banks"]);
     render(<App />);
-    expect(screen.queryByText("GAME OVER"));
 
-    userEvent.click(screen.getByText("New Game"));
-    expect(screen.queryByText("GAME OVER")).toBeNull();
-    expect(document.querySelectorAll("main div")).toHaveLength(6);
-    expect(document.querySelector("main")?.textContent).toEqual("");
+    expect(screen.queryByText("GAME OVER"));
   });
 });

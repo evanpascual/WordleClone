@@ -3,13 +3,13 @@ import { useStore } from "./store";
 import WordRow from "./WordRow";
 import { LETTER_LENGTH } from "./word-utils";
 
-const GUESS_LENGTH = 6;
+export const GUESS_LENGTH = 6;
 
 export default function App() {
   const state = useStore();
   const [guess, setGuess] = useState("");
 
-  //onChange handler.
+  //onChange handler for user keyboard input.
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newGuess = e.target.value;
 
@@ -31,7 +31,7 @@ export default function App() {
   rows = rows.concat(Array(numGuessesRemaining).fill(""));
 
   //Handle how the game is completed when winning/using all 6 guesses
-  const isGameOver = state.rows.length === GUESS_LENGTH;
+  const isGameOver = state.gameState !== "playing";
 
   return (
     <div className="mx-auto w-96 relative">
@@ -48,7 +48,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="grid grid-rows-6 gap-4">
+      <main className="grid grid-rows-6 gap-4" aria-label="main-content">
         {rows.map(({ guess, result }, index) => (
           <WordRow key={index} letters={guess} result={result} />
         ))}
