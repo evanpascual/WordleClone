@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useStore } from "./store";
 import WordRow from "./WordRow";
 import { isValidWord, LETTER_LENGTH } from "./word-utils";
+import Keyboard from "./Keyboard";
 
 export const GUESS_LENGTH = 6;
 
 export default function App() {
   const state = useStore();
-  const [guess, setGuess] = useGuess();
+  const [guess, setGuess, addGuessLetter] = useGuess();
 
   //Valid guess checks
   const [showInvalidGuess, setInvalidGuess] = useState(false);
@@ -57,7 +58,7 @@ export default function App() {
         <h1 className="text-4xl text-center"> Wordle </h1>
       </header>
 
-      <main className="grid grid-rows-6 gap-4">
+      <main className="grid grid-rows-6 gap-4 mb-7">
         {rows.map(({ guess, result }, index) => (
           <WordRow
             key={index}
@@ -70,6 +71,12 @@ export default function App() {
         ))}
       </main>
 
+      <Keyboard
+        onClick={(letter) => {
+          addGuessLetter(letter);
+        }}
+      />
+
       {isGameOver && (
         <div
           className="absolute bg-white left-0 right-0 first-line 
@@ -78,6 +85,7 @@ export default function App() {
           role="modal"
         >
           GAME OVER
+          <WordRow letters={state.answer} />
           <button
             className="block bg-green-500 p-1 mx-auto rounded-md mt-3 shadow"
             onClick={() => {
@@ -94,12 +102,14 @@ export default function App() {
 }
 
 //Allow keyboard input without an input field
-function useGuess(): [string, React.Dispatch<React.SetStateAction<string>>] {
+function useGuess(): [
+  string,
+  React.Dispatch<React.SetStateAction<string>>,
+  (letter: string) => void
+] {
   const [guess, setGuess] = useState("");
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    let letter = e.key;
-    console.log(letter);
+  const addGuessLetter = (letter: string) => {
     setGuess((currentGuess) => {
       const newGuess =
         letter.length === 1 ? currentGuess + letter : currentGuess;
@@ -120,6 +130,11 @@ function useGuess(): [string, React.Dispatch<React.SetStateAction<string>>] {
     });
   };
 
+  const onKeyDown = (e: KeyboardEvent) => {
+    let letter = e.key;
+    addGuessLetter(letter);
+  };
+
   //Keyboard listener.
   useEffect(() => {
     document.addEventListener("keydown", onKeyDown);
@@ -128,7 +143,7 @@ function useGuess(): [string, React.Dispatch<React.SetStateAction<string>>] {
     };
   }, []);
 
-  return [guess, setGuess];
+  return [guess, setGuess, addGuessLetter];
 }
 
 //From https://usehooks.com/usePrevious/

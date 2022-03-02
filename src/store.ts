@@ -1,3 +1,4 @@
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import { GUESS_LENGTH } from "./App";
@@ -12,6 +13,7 @@ interface StoreState {
     answer: string;
     rows: GuessRow[];
     gameState: 'playing' | 'won' | 'lost';
+    keyboardLetterState: {[letter: string]: LetterState};
     addGuess: (guess: string) => void;
     newGame: (initalGuess?: string[]) => void;
 }
@@ -25,10 +27,29 @@ export const useStore = create<StoreState>(
                 const result = computeGuess(guess, get().answer);
                 const didWin = result.every(i => i === LetterState.Match);
                 const rows = [...get().rows, {guess, result: computeGuess(guess, get().answer)}];
+                const keyboardLetterState = get().keyboardLetterState;
+
+                //Interate over every letter in keyboard to update its state
+                result.forEach((r, index) => {
+                    const resultGuessLetter = guess[index];
+                    const currentLetterState = keyboardLetterState[resultGuessLetter];
+                    switch(currentLetterState) {
+                        case LetterState.Match:
+                            break;
+                        case LetterState.Present:
+                            if(r === LetterState.Miss) {
+                                break;
+                            }
+                        default:
+                            keyboardLetterState[resultGuessLetter] = r;
+                            break;
+                    }
+                }); 
 
                 //How the state updates when a guess is added.
                 set(() => ({
                     rows,
+                    keyboardLetterState,
                     gameState: didWin ? 'won': rows.length === GUESS_LENGTH ? 'lost': 'playing',
                 }));
             }
@@ -37,6 +58,7 @@ export const useStore = create<StoreState>(
                 answer: getRandomWord(),
                 rows: [],
                 gameState: 'playing',
+                keyboardLetterState: {},
                 addGuess,
     
                 //Result variables once a new game is started.
@@ -45,6 +67,7 @@ export const useStore = create<StoreState>(
                     set({
                         answer: getRandomWord(),
                         rows: [],
+                        keyboardLetterState: {},
                         gameState: 'playing',
                     });
                     initialRows.every(addGuess)
